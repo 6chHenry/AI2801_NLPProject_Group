@@ -10,7 +10,7 @@ Training-free hierarchical KV cache compression for **Pythia-70M**, combining:
 
 Paper: `group_work/tieredkv_paper.tex` (NeurIPS 2025 template, ≤4 pages).
 
-Individual baseline implementations (StreamingLLM, SnapKV, TreeKV) live in the **personal repo**: [AI2801_NLPProject_Individual](https://github.com/6chHenry/AI2801_NLPProject_Individual).
+Individual baseline implementations (StreamingLLM, SnapKV, TreeKV, SnapKV improvements) live in the **personal repo**: [KV_Cache_Compression](https://github.com/6chHenry/KV_Cache_Compression).
 
 ---
 
