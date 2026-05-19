@@ -13,7 +13,14 @@ cache/
 .cursor/
 .vscode/
 
-# Dev / debug scripts (not needed to reproduce paper numbers)
+# Paper / local docs (not in this repo)
+group_work/
+
+# One-off runners & eval harnesses (use integrated.py instead)
+src/eval_pg19_baseline.py
+src/run_pg19_suite.py
+
+# Dev / debug scripts
 src/debug_kv_lens.py
 src/verify_treekv.py
 src/compare_ppl_protocol.py
