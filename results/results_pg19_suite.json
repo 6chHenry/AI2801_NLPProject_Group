@@ -1,0 +1,596 @@
+{
+  "config": {
+    "num_samples": 20,
+    "pg19_tokens": 8192,
+    "pg19_max_length": 2048,
+    "stride": 512,
+    "k_ratio": 0.5,
+    "prefill_tokens": 4096,
+    "dtype": "fp32",
+    "attn": "eager"
+  },
+  "baseline_benchmark": {
+    "method": "baseline_full_kv",
+    "prompt_tokens": 4096,
+    "generated_tokens": 100,
+    "kv_len_after_prefill": 4096,
+    "kv_len_after_decode": 4195,
+    "ttft_sec": 0.6431,
+    "tpot_sec": 0.005626,
+    "throughput_tps": 3496.63,
+    "prefill_sec": 0.6431,
+    "decode_sec": 0.5569,
+    "decode_tps": 179.55,
+    "peak_mem_mb": 1519.3,
+    "flops": {
+      "prefill_flops": 206158430208,
+      "decode_flops": 5042442240,
+      "total_flops": 211200872448,
+      "avg_flops_per_token": 50333859
+    }
+  },
+  "sink_treekv_benchmark": {
+    "method": "sink_treekv",
+    "k_sink": 4,
+    "k_ratio": 0.5,
+    "layer_ratios": "uniform",
+    "n_levels": 4,
+    "obs_window": 32,
+    "local_window": 32,
+    "prompt_tokens": 4096,
+    "generated_tokens": 100,
+    "kv_len_after_compress": 2066,
+    "ttft_sec": 0.4466,
+    "tpot_sec": 0.004737,
+    "throughput_tps": 4582.61,
+    "prefill_sec": 0.4466,
+    "decode_sec": 0.469,
+    "decode_tps": 213.22,
+    "peak_mem_mb": 4239.8,
+    "flops": {
+      "prefill_flops": 206158430208,
+      "decode_flops": 2572922880,
+      "total_flops": 208731353088,
+      "avg_flops_per_token": 49745317
+    }
+  },
+  "treekv_only_benchmark": {
+    "method": "treekv_only",
+    "k_sink": 0,
+    "k_ratio": 0.5,
+    "layer_ratios": "uniform",
+    "n_levels": 4,
+    "obs_window": 32,
+    "local_window": 32,
+    "prompt_tokens": 4096,
+    "generated_tokens": 100,
+    "kv_len_after_compress": 2064,
+    "ttft_sec": 0.3953,
+    "tpot_sec": 0.004646,
+    "throughput_tps": 4906.25,
+    "prefill_sec": 0.3953,
+    "decode_sec": 0.46,
+    "decode_tps": 217.41,
+    "peak_mem_mb": 4239.8,
+    "flops": {
+      "prefill_flops": 206158430208,
+      "decode_flops": 2570489856,
+      "total_flops": 208728920064,
+      "avg_flops_per_token": 49744737
+    }
+  },
+  "baseline": {
+    "pg19_ppl_avg": 14.7726,
+    "pg19_ppl_std": 3.5502,
+    "pg19_per_sample": [
+      {
+        "sample_idx": 0,
+        "title": "Reminiscences of Pioneer Days in St. Paul by Frank Moore",
+        "ppl": 13.3691,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 1,
+        "title": "Dragon's blood by Henry Milner Rideout",
+        "ppl": 20.0277,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 2,
+        "title": "Travels in Morocco Volume 2 by James Richardson",
+        "ppl": 16.7433,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 3,
+        "title": "Impressions of Theophrastus Such by George Eliot",
+        "ppl": 21.7803,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 4,
+        "title": "Odd Craft Part 4: Bill's Lapse by W.W. Jacobs",
+        "ppl": 11.0081,
+        "tokens": 7140
+      },
+      {
+        "sample_idx": 5,
+        "title": "The S. W. F. Club by Caroline E. Jacobs",
+        "ppl": 10.6088,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 6,
+        "title": "Frank Merriwell Down South by Burt L. Standish",
+        "ppl": 12.9073,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 7,
+        "title": "Critical Miscellanies (Vol. 2 of 3) by John Morley",
+        "ppl": 16.7269,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 8,
+        "title": "From Sand Hill to Pine by Bret Harte",
+        "ppl": 16.6573,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 9,
+        "title": "Child's Health Primer For Primary Classes by Jane Andrews",
+        "ppl": 9.4034,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 10,
+        "title": "On the Portraits of English Authors on Gardening by Samuel Felton",
+        "ppl": 19.2792,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 11,
+        "title": "Discourse of a Method for the Well Guiding of Reason by Rene Descartes",
+        "ppl": 22.2013,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 12,
+        "title": "Laurence Sterne in Germany by Harvey Waterman Thayer",
+        "ppl": 16.1021,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 13,
+        "title": "The Forester's Daughter by Hamlin Garland",
+        "ppl": 14.9292,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 14,
+        "title": "The Life of Gordon Volume II by Demetrius Charles Boulger",
+        "ppl": 14.4429,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 15,
+        "title": "Minnie's Pet Monkey by Madeline Leslie",
+        "ppl": 11.31,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 16,
+        "title": "In Her Own Right by John Reed Scott",
+        "ppl": 13.3125,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 17,
+        "title": "Turn About Eleanor by Ethel M. Kelley",
+        "ppl": 12.809,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 18,
+        "title": "Jennie Gerhardt by Theodore Dreiser",
+        "ppl": 13.0053,
+        "tokens": 8191
+      },
+      {
+        "sample_idx": 19,
+        "title": "Red White Blue Socks Part Second by Sarah L. Barrow",
+        "ppl": 16.414,
+        "tokens": 8191
+      }
+    ],
+    "num_samples": 20
+  },
+  "treekv_only": {
+    "mode": "treekv_only",
+    "k_ratio": 0.5,
+    "pg19_ppl_avg": 37.1763,
+    "pg19_ppl_std": 12.0127,
+    "pg19_per_sample": [
+      {
+        "sample_idx": 0,
+        "title": "Reminiscences of Pioneer Days in St. Paul by Frank Moore",
+        "ppl": 31.1596,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 1,
+        "title": "Dragon's blood by Henry Milner Rideout",
+        "ppl": 59.1571,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 2,
+        "title": "Travels in Morocco Volume 2 by James Richardson",
+        "ppl": 45.1958,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 3,
+        "title": "Impressions of Theophrastus Such by George Eliot",
+        "ppl": 59.1376,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 4,
+        "title": "Odd Craft Part 4: Bill's Lapse by W.W. Jacobs",
+        "ppl": 29.829,
+        "tokens": 6629
+      },
+      {
+        "sample_idx": 5,
+        "title": "The S. W. F. Club by Caroline E. Jacobs",
+        "ppl": 23.1955,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 6,
+        "title": "Frank Merriwell Down South by Burt L. Standish",
+        "ppl": 30.2889,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 7,
+        "title": "Critical Miscellanies (Vol. 2 of 3) by John Morley",
+        "ppl": 43.2704,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 8,
+        "title": "From Sand Hill to Pine by Bret Harte",
+        "ppl": 42.5294,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 9,
+        "title": "Child's Health Primer For Primary Classes by Jane Andrews",
+        "ppl": 21.3045,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 10,
+        "title": "On the Portraits of English Authors on Gardening by Samuel Felton",
+        "ppl": 54.4792,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 11,
+        "title": "Discourse of a Method for the Well Guiding of Reason by Rene Descartes",
+        "ppl": 62.6244,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 12,
+        "title": "Laurence Sterne in Germany by Harvey Waterman Thayer",
+        "ppl": 42.0539,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 13,
+        "title": "The Forester's Daughter by Hamlin Garland",
+        "ppl": 39.1938,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 14,
+        "title": "The Life of Gordon Volume II by Demetrius Charles Boulger",
+        "ppl": 33.4878,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 15,
+        "title": "Minnie's Pet Monkey by Madeline Leslie",
+        "ppl": 25.3383,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 16,
+        "title": "In Her Own Right by John Reed Scott",
+        "ppl": 31.0212,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 17,
+        "title": "Turn About Eleanor by Ethel M. Kelley",
+        "ppl": 30.3791,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 18,
+        "title": "Jennie Gerhardt by Theodore Dreiser",
+        "ppl": 32.0608,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 19,
+        "title": "Red White Blue Socks Part Second by Sarah L. Barrow",
+        "ppl": 42.2797,
+        "tokens": 7680
+      }
+    ],
+    "num_samples": 20
+  },
+  "sink_treekv": {
+    "mode": "sink_treekv",
+    "k_ratio": 0.5,
+    "pg19_ppl_avg": 37.1744,
+    "pg19_ppl_std": 12.0189,
+    "pg19_per_sample": [
+      {
+        "sample_idx": 0,
+        "title": "Reminiscences of Pioneer Days in St. Paul by Frank Moore",
+        "ppl": 31.1596,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 1,
+        "title": "Dragon's blood by Henry Milner Rideout",
+        "ppl": 59.1632,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 2,
+        "title": "Travels in Morocco Volume 2 by James Richardson",
+        "ppl": 45.1949,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 3,
+        "title": "Impressions of Theophrastus Such by George Eliot",
+        "ppl": 59.1435,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 4,
+        "title": "Odd Craft Part 4: Bill's Lapse by W.W. Jacobs",
+        "ppl": 29.8221,
+        "tokens": 6629
+      },
+      {
+        "sample_idx": 5,
+        "title": "The S. W. F. Club by Caroline E. Jacobs",
+        "ppl": 23.1896,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 6,
+        "title": "Frank Merriwell Down South by Burt L. Standish",
+        "ppl": 30.2911,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 7,
+        "title": "Critical Miscellanies (Vol. 2 of 3) by John Morley",
+        "ppl": 43.2761,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 8,
+        "title": "From Sand Hill to Pine by Bret Harte",
+        "ppl": 42.5287,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 9,
+        "title": "Child's Health Primer For Primary Classes by Jane Andrews",
+        "ppl": 21.2766,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 10,
+        "title": "On the Portraits of English Authors on Gardening by Samuel Felton",
+        "ppl": 54.4821,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 11,
+        "title": "Discourse of a Method for the Well Guiding of Reason by Rene Descartes",
+        "ppl": 62.647,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 12,
+        "title": "Laurence Sterne in Germany by Harvey Waterman Thayer",
+        "ppl": 42.0545,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 13,
+        "title": "The Forester's Daughter by Hamlin Garland",
+        "ppl": 39.1927,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 14,
+        "title": "The Life of Gordon Volume II by Demetrius Charles Boulger",
+        "ppl": 33.4881,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 15,
+        "title": "Minnie's Pet Monkey by Madeline Leslie",
+        "ppl": 25.337,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 16,
+        "title": "In Her Own Right by John Reed Scott",
+        "ppl": 31.0198,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 17,
+        "title": "Turn About Eleanor by Ethel M. Kelley",
+        "ppl": 30.3781,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 18,
+        "title": "Jennie Gerhardt by Theodore Dreiser",
+        "ppl": 32.0626,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 19,
+        "title": "Red White Blue Socks Part Second by Sarah L. Barrow",
+        "ppl": 42.2819,
+        "tokens": 7680
+      }
+    ],
+    "num_samples": 20
+  },
+  "tiered_full": {
+    "mode": "tiered_full",
+    "k_ratio": 0.5,
+    "pg19_ppl_avg": 37.3397,
+    "pg19_ppl_std": 12.0182,
+    "pg19_per_sample": [
+      {
+        "sample_idx": 0,
+        "title": "Reminiscences of Pioneer Days in St. Paul by Frank Moore",
+        "ppl": 31.219,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 1,
+        "title": "Dragon's blood by Henry Milner Rideout",
+        "ppl": 59.2796,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 2,
+        "title": "Travels in Morocco Volume 2 by James Richardson",
+        "ppl": 45.3814,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 3,
+        "title": "Impressions of Theophrastus Such by George Eliot",
+        "ppl": 59.2012,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 4,
+        "title": "Odd Craft Part 4: Bill's Lapse by W.W. Jacobs",
+        "ppl": 30.1801,
+        "tokens": 6629
+      },
+      {
+        "sample_idx": 5,
+        "title": "The S. W. F. Club by Caroline E. Jacobs",
+        "ppl": 23.3164,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 6,
+        "title": "Frank Merriwell Down South by Burt L. Standish",
+        "ppl": 30.3797,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 7,
+        "title": "Critical Miscellanies (Vol. 2 of 3) by John Morley",
+        "ppl": 43.3833,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 8,
+        "title": "From Sand Hill to Pine by Bret Harte",
+        "ppl": 42.9109,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 9,
+        "title": "Child's Health Primer For Primary Classes by Jane Andrews",
+        "ppl": 21.3649,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 10,
+        "title": "On the Portraits of English Authors on Gardening by Samuel Felton",
+        "ppl": 54.5048,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 11,
+        "title": "Discourse of a Method for the Well Guiding of Reason by Rene Descartes",
+        "ppl": 62.9113,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 12,
+        "title": "Laurence Sterne in Germany by Harvey Waterman Thayer",
+        "ppl": 42.2657,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 13,
+        "title": "The Forester's Daughter by Hamlin Garland",
+        "ppl": 39.3967,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 14,
+        "title": "The Life of Gordon Volume II by Demetrius Charles Boulger",
+        "ppl": 33.8401,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 15,
+        "title": "Minnie's Pet Monkey by Madeline Leslie",
+        "ppl": 25.4316,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 16,
+        "title": "In Her Own Right by John Reed Scott",
+        "ppl": 31.2416,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 17,
+        "title": "Turn About Eleanor by Ethel M. Kelley",
+        "ppl": 30.5191,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 18,
+        "title": "Jennie Gerhardt by Theodore Dreiser",
+        "ppl": 32.1194,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 19,
+        "title": "Red White Blue Socks Part Second by Sarah L. Barrow",
+        "ppl": 42.3825,
+        "tokens": 7680
+      }
+    ],
+    "num_samples": 20
+  }
+}

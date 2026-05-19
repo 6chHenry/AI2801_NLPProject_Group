@@ -1,0 +1,338 @@
+{
+  "treekv_only": {
+    "mode": "treekv_only",
+    "config": {
+      "use_sink": false,
+      "use_layer_adaptive": false,
+      "use_cross_layer_fusion": false,
+      "use_treekv": true,
+      "k_sink": 0,
+      "k_ratio": 0.5,
+      "layer_ratios": "uniform",
+      "n_levels": 4
+    },
+    "wikitext2_ppl": 41.7799,
+    "pg19_ppl": 279.8144,
+    "benchmark": {
+      "method": "treekv_only",
+      "k_sink": 0,
+      "k_ratio": 0.5,
+      "layer_ratios": "uniform",
+      "n_levels": 4,
+      "obs_window": 32,
+      "local_window": 32,
+      "prompt_tokens": 4096,
+      "generated_tokens": 100,
+      "kv_len_after_compress": 2064,
+      "ttft_sec": 0.9622,
+      "tpot_sec": 0.025368,
+      "throughput_tps": 1207.96,
+      "prefill_sec": 0.9622,
+      "decode_sec": 2.5115,
+      "decode_tps": 39.82,
+      "peak_mem_mb": 4239.8,
+      "flops": {
+        "prefill_flops": 206158430208,
+        "decode_flops": 2570489856,
+        "total_flops": 208728920064,
+        "avg_flops_per_token": 49744737
+      }
+    },
+    "pg19_per_sample": [
+      {
+        "sample_idx": 0,
+        "title": "Reminiscences of Pioneer Days in St. Paul by Frank Moore",
+        "ppl": 248.8398,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 1,
+        "title": "Dragon's blood by Henry Milner Rideout",
+        "ppl": 372.8635,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 2,
+        "title": "Travels in Morocco Volume 2 by James Richardson",
+        "ppl": 340.0675,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 3,
+        "title": "Impressions of Theophrastus Such by George Eliot",
+        "ppl": 283.873,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 4,
+        "title": "Odd Craft Part 4: Bill's Lapse by W.W. Jacobs",
+        "ppl": 180.336,
+        "tokens": 6629
+      }
+    ]
+  },
+  "sink_treekv": {
+    "mode": "sink_treekv",
+    "config": {
+      "use_sink": true,
+      "use_layer_adaptive": false,
+      "use_cross_layer_fusion": false,
+      "use_treekv": true,
+      "k_sink": 4,
+      "k_ratio": 0.5,
+      "layer_ratios": "uniform",
+      "n_levels": 4
+    },
+    "wikitext2_ppl": 41.7775,
+    "pg19_ppl": 286.5215,
+    "benchmark": {
+      "method": "sink_treekv",
+      "k_sink": 4,
+      "k_ratio": 0.5,
+      "layer_ratios": "uniform",
+      "n_levels": 4,
+      "obs_window": 32,
+      "local_window": 32,
+      "prompt_tokens": 4096,
+      "generated_tokens": 100,
+      "kv_len_after_compress": 2066,
+      "ttft_sec": 0.4032,
+      "tpot_sec": 0.024242,
+      "throughput_tps": 1496.89,
+      "prefill_sec": 0.4032,
+      "decode_sec": 2.4,
+      "decode_tps": 41.67,
+      "peak_mem_mb": 4239.8,
+      "flops": {
+        "prefill_flops": 206158430208,
+        "decode_flops": 2572922880,
+        "total_flops": 208731353088,
+        "avg_flops_per_token": 49745317
+      }
+    },
+    "pg19_per_sample": [
+      {
+        "sample_idx": 0,
+        "title": "Reminiscences of Pioneer Days in St. Paul by Frank Moore",
+        "ppl": 257.5833,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 1,
+        "title": "Dragon's blood by Henry Milner Rideout",
+        "ppl": 382.1992,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 2,
+        "title": "Travels in Morocco Volume 2 by James Richardson",
+        "ppl": 348.1689,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 3,
+        "title": "Impressions of Theophrastus Such by George Eliot",
+        "ppl": 288.9287,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 4,
+        "title": "Odd Craft Part 4: Bill's Lapse by W.W. Jacobs",
+        "ppl": 183.4405,
+        "tokens": 6629
+      }
+    ]
+  },
+  "layer_treekv": {
+    "mode": "layer_treekv",
+    "config": {
+      "use_sink": false,
+      "use_layer_adaptive": true,
+      "use_treekv": true,
+      "k_sink": 0,
+      "k_ratio": 0.5,
+      "layer_ratios": [
+        0.7,
+        0.65,
+        0.55,
+        0.5,
+        0.4,
+        0.35
+      ],
+      "n_levels": 4
+    },
+    "wikitext2_ppl": 41.9106,
+    "pg19_ppl": 31.2024,
+    "benchmark": {
+      "method": "layer_treekv",
+      "k_sink": 0,
+      "k_ratio": 0.5,
+      "layer_ratios": [
+        0.7,
+        0.65,
+        0.55,
+        0.5,
+        0.4,
+        0.35
+      ],
+      "n_levels": 4,
+      "obs_window": 32,
+      "local_window": 32,
+      "prompt_tokens": 4096,
+      "generated_tokens": 100,
+      "kv_len_after_compress": 2064,
+      "ttft_sec": 0.5427,
+      "tpot_sec": 0.024257,
+      "throughput_tps": 1425.17,
+      "prefill_sec": 0.5427,
+      "decode_sec": 2.4015,
+      "decode_tps": 41.64,
+      "peak_mem_mb": 4239.8,
+      "flops": {
+        "prefill_flops": 206158430208,
+        "decode_flops": 2570489856,
+        "total_flops": 208728920064,
+        "avg_flops_per_token": 49744737
+      }
+    }
+  },
+  "tiered_full": {
+    "mode": "tiered_full",
+    "config": {
+      "use_sink": true,
+      "use_layer_adaptive": true,
+      "use_cross_layer_fusion": true,
+      "use_treekv": true,
+      "k_sink": 4,
+      "k_ratio": 0.5,
+      "layer_ratios": [
+        0.7,
+        0.65,
+        0.55,
+        0.5,
+        0.4,
+        0.35
+      ],
+      "n_levels": 4
+    },
+    "wikitext2_ppl": 41.9176,
+    "pg19_ppl": 43.6142,
+    "benchmark": {
+      "method": "tiered_full",
+      "k_sink": 4,
+      "k_ratio": 0.5,
+      "layer_ratios": [
+        0.7,
+        0.65,
+        0.55,
+        0.5,
+        0.4,
+        0.35
+      ],
+      "n_levels": 4,
+      "obs_window": 32,
+      "local_window": 32,
+      "prompt_tokens": 4096,
+      "generated_tokens": 100,
+      "kv_len_after_compress": 2066,
+      "ttft_sec": 0.5527,
+      "tpot_sec": 0.024684,
+      "throughput_tps": 1400.31,
+      "prefill_sec": 0.5527,
+      "decode_sec": 2.4438,
+      "decode_tps": 40.92,
+      "peak_mem_mb": 4239.8,
+      "flops": {
+        "prefill_flops": 206158430208,
+        "decode_flops": 2572922880,
+        "total_flops": 208731353088,
+        "avg_flops_per_token": 49745317
+      }
+    },
+    "pg19_per_sample": [
+      {
+        "sample_idx": 0,
+        "title": "Reminiscences of Pioneer Days in St. Paul by Frank Moore",
+        "ppl": 31.219,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 1,
+        "title": "Dragon's blood by Henry Milner Rideout",
+        "ppl": 59.2796,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 2,
+        "title": "Travels in Morocco Volume 2 by James Richardson",
+        "ppl": 45.3814,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 3,
+        "title": "Impressions of Theophrastus Such by George Eliot",
+        "ppl": 59.2012,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 4,
+        "title": "Odd Craft Part 4: Bill's Lapse by W.W. Jacobs",
+        "ppl": 30.1801,
+        "tokens": 6629
+      }
+    ]
+  },
+  "fusion_treekv": {
+    "mode": "fusion_treekv",
+    "config": {
+      "use_sink": false,
+      "use_layer_adaptive": true,
+      "use_cross_layer_fusion": true,
+      "use_treekv": true,
+      "k_sink": 0,
+      "k_ratio": 0.5,
+      "layer_ratios": [
+        0.7,
+        0.65,
+        0.55,
+        0.5,
+        0.4,
+        0.35
+      ],
+      "n_levels": 4
+    },
+    "pg19_ppl": 43.6195,
+    "pg19_per_sample": [
+      {
+        "sample_idx": 0,
+        "title": "Reminiscences of Pioneer Days in St. Paul by Frank Moore",
+        "ppl": 31.2194,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 1,
+        "title": "Dragon's blood by Henry Milner Rideout",
+        "ppl": 59.2742,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 2,
+        "title": "Travels in Morocco Volume 2 by James Richardson",
+        "ppl": 45.3855,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 3,
+        "title": "Impressions of Theophrastus Such by George Eliot",
+        "ppl": 59.2026,
+        "tokens": 7680
+      },
+      {
+        "sample_idx": 4,
+        "title": "Odd Craft Part 4: Bill's Lapse by W.W. Jacobs",
+        "ppl": 30.2,
+        "tokens": 6629
+      }
+    ]
+  }
+}

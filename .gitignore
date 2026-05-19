@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Local caches & downloads
+cache/
+
+# IDE / agent
+.claude/
+.cursor/
+.vscode/
+
+# Dev / debug scripts (not needed to reproduce paper numbers)
+src/debug_kv_lens.py
+src/verify_treekv.py
+src/compare_ppl_protocol.py
+
+# Logs
+results/*.log
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,185 @@
+\documentclass{article}
+
+\usepackage[preprint,nonatbib]{neurips_2025}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\title{TieredKV: Training-Free Hierarchical KV Cache\\Compression for Long-Context LLM Inference}
+
+\author{%
+  NLP Course Group Project \\
+  \texttt{[fill in group members \& emails]}
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+KV caching limits long-context inference on memory and latency.
+We present \textbf{TieredKV}, a training-free stack combining attention-sink protection, optional cross-layer importance fusion, and TreeKV intra-layer eviction under a \textbf{Unified Hierarchical Budget (UHB)}.
+On Pythia-70M with a \emph{matched} compress-and-evaluate PPL protocol, \texttt{sink\_treekv} at $\rho{=}0.5$ halves KV length (4096$\rightarrow$2066) and raises throughput ${\sim}31\%$ while increasing WikiText-2 PPL by ${\sim}6\%$ and PG-19 (20 books) by only ${\sim}1.4\%$.
+At $\rho{=}0.8$, both corpora stay within ${\sim}1.5\%$ of full KV with smaller memory/speed wins.
+\end{abstract}
+
+\section{Introduction}
+
+Transformer inference stores growing KV caches.
+Prior work targets attention sinks~\cite{xiao2024streamingllm}, inter-layer sharing~\cite{sun2024yoco}, and intra-layer eviction (SnapKV~\cite{li2024snapkv}, TreeKV~\cite{he2025treekv}).
+We compose three \textbf{training-free} tiers on Pythia-70M~\cite{biderman2023pythia}:
+\textbf{(T1)} sink-token protection;
+\textbf{(T2)} optional cross-layer attention fusion before selection;
+\textbf{(T3)} TreeKV block top-$k$.
+UHB keeps \emph{equal compressed length across layers} for correct decoding.
+
+\textbf{Contributions.}
+(1)~UHB formalizing sink, block, and local-window budgets;
+(2)~ablation pipeline with matched fp32/eager evaluation;
+(3)~20-book PG-19 study under a unified compress-and-evaluate protocol;
+(4)~joint quality \emph{and} systems tables including full-KV baseline latency/KV length.
+
+\section{Method}
+
+After prefill on $x_{1:S}$, each layer's cache is compressed once using prefill attentions; RoPE uses kept indices only.
+Budget $B=\lfloor\rho(S-k_{\mathrm{sink}}-w_{\mathrm{local}})\rfloor$; local window always kept.
+\textbf{T1:} retain $\mathcal{S}=\{0,\ldots,k_{\mathrm{sink}}-1\}$.
+\textbf{T2:} fuse layer-wise importances $I_\ell$ (from last $w_{\mathrm{obs}}$ queries) via shallow-weighted average, shared across layers; DALB geometry is ablated separately.
+\textbf{T3:} split history into $N$ blocks; budget $b_i\propto 2^{i\gamma}$; top-$b_i$ tokens per block; capacity-reassign so $\sum b_i=B$ and all layers share equal length.
+
+\section{Experiments}
+
+\subsection{Protocol}
+\textbf{Model:} Pythia-70M; \textbf{all methods use fp32 + eager}.
+\textbf{PPL (matched for all rows):} for each 512-token target chunk, prefill context (up to 1536 tokens), optionally compress KV once, then forward the target with explicit \texttt{position\_ids} ($L{=}2048$, stride 512).
+Full KV uses the same loop with a no-op compressor.
+\textbf{PG-19:} 20 test books, 8192 tokens each; token-weighted mean $\pm$ std over books.
+\textbf{Latency:} 4096-token PG-19 prefill + 100-token greedy decode.
+\textbf{Defaults:} $k_{\mathrm{sink}}{=}4$, $w_{\mathrm{obs}}{=}w_{\mathrm{local}}{=}32$, $N{=}4$; sweep $\rho\in\{0.5,0.8\}$.
+
+\subsection{Perplexity}
+Table~\ref{tab:ppl} reports matched-protocol PPL.
+At $\rho{=}0.5$, \texttt{sink\_treekv} adds ${\sim}6\%$ WikiText overhead but only ${\sim}1.4\%$ on PG-19 (36.67$\rightarrow$37.17).
+At $\rho{=}0.8$, both corpora stay within ${\sim}1.5\%$ of full KV.
+Earlier ${\sim}2.5\times$ PG-19 gaps came from mixing a 2048-token sliding-window baseline with a compress-and-evaluate protocol for compressed runs.
+Inter-layer fusion does not beat \texttt{sink\_treekv}.
+
+\begin{table}[t]
+  \centering
+  \caption{PPL ($\downarrow$). Matched protocol; PG-19: 20-book avg.$\pm$std.}
+  \label{tab:ppl}
+  \small
+  \setlength{\tabcolsep}{6pt}
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    Method & WikiText-2 & PG-19 & $\Delta$Wiki \\
+    \midrule
+    Full KV & \textbf{39.38} & \textbf{36.67$\pm$11.92} & --- \\
+    SnapKV ($\rho{=}0.5$) & 42.24 & --- & +7.3\% \\
+    TreeKV only ($\rho{=}0.5$) & 41.78 & 37.18$\pm$12.01 & +6.1\% \\
+    \texttt{sink\_treekv} ($\rho{=}0.5$) & 41.78 & 37.17$\pm$12.02 & +6.1\% \\
+    \texttt{sink\_treekv} ($\rho{=}0.8$) & \textbf{39.95} & 36.80$\pm$11.92 & +1.5\% \\
+    + Fusion ($\rho{=}0.5$) & 41.99 & 37.34$\pm$12.02 & +6.6\% \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Compression-ratio trade-off}
+Table~\ref{tab:pareto} summarizes \texttt{sink\_treekv} at $\rho{=}0.5$ vs.\ $\rho{=}0.8$.
+Raising $\rho$ nearly closes the WikiText gap (+1.5\%) but yields modest PG-19 gains (+0.4\% at $\rho{=}0.8$) because TreeKV's geometric ``sparse-left'' policy still prunes distant blocks aggressively.
+Systems-wise, $\rho{=}0.8$ retains 3284 tokens vs.\ 2066 at $\rho{=}0.5$; throughput gain falls from +31\% to +3\% (within-run baselines).
+
+\begin{table}[t]
+  \centering
+  \caption{Pareto frontier: \texttt{sink\_treekv} vs.\ full KV (4096 prefill, 100 decode).}
+  \label{tab:pareto}
+  \small
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}lrrrrr@{}}
+    \toprule
+    $\rho$ & WikiText & PG-19 & KV len & TP (tok/s) & $\Delta$TP \\
+    \midrule
+    Full & 39.38 & 36.67$\pm$11.92 & 4096 & 3497$^\dagger$ & --- \\
+    0.8 & 39.95 & 36.80$\pm$11.92 & 3284 & 1387 & +3\% \\
+    0.5 & 41.78 & 37.17$\pm$12.02 & 2066 & 4583 & +31\% \\
+    \bottomrule
+  \end{tabular}
+  \vspace{2pt}
+
+  {\footnotesize $^\dagger$Baseline throughput varies across runs (1346--3497); compare $\Delta$TP within each run.}
+\end{table}
+
+\subsection{Systems metrics}
+Table~\ref{tab:sys} reports full-KV baseline and compressors on identical 4096-token prefills ($\rho{=}0.5$).
+KV length halves; TTFT drops 31\%; end-to-end throughput +31\%; decode FLOPs fall ${\sim}49\%$.
+At $\rho{=}0.8$, KV length is 3284 (+3\% throughput; Table~\ref{tab:pareto}).
+Peak memory is higher for compressors because prefill uses \texttt{output\_attentions=True}; KV \emph{length}---not peak GB---is the fair storage metric here.
+
+\begin{table}[t]
+  \centering
+  \caption{Long-context systems metrics ($\rho{=}0.5$, 4096 prefill, 100 decode).}
+  \label{tab:sys}
+  \small
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}lrrrrr@{}}
+    \toprule
+    Method & KV len & TTFT (s) & TPOT (s) & TP (tok/s) & Dec.FLOPs \\
+    \midrule
+    Full KV & 4096 & 0.64 & 5.6 & 3497 & 5.04B \\
+    TreeKV & 2064 & 0.40 & 4.6 & 4906 & 2.57B \\
+    \texttt{sink\_treekv} & 2066 & 0.45 & 4.7 & 4583 & 2.57B \\
+    \bottomrule
+  \end{tabular}
+  \vspace{2pt}
+
+  {\footnotesize TP = end-to-end throughput; Dec.FLOPs = decode-phase attention estimate.}
+\end{table}
+
+\subsection{Discussion}
+\textbf{Best config:} \texttt{sink\_treekv}---matches TreeKV PPL with stable TTFT benefit from sinks.
+\textbf{Choosing $\rho$:} $\rho{=}0.5$ maximizes memory/latency savings; $\rho{=}0.8$ is near-lossless under our protocol.
+\textbf{Evaluation lesson:} PPL numbers are protocol-dependent; always match baseline and compressor pipelines.
+\textbf{PG-19 variance:} high per-book std ($\pm$12) remains; report multi-book averages.
+
+\section{Conclusion}
+TieredKV integrates three training-free compression tiers under UHB.
+On Pythia-70M with matched evaluation, $\rho{=}0.5$ delivers ${\sim}2\times$ shorter caches and ${\sim}31\%$ higher throughput at ${\sim}6\%$ WikiText / ${\sim}1.4\%$ PG-19 cost; $\rho{=}0.8$ is near-lossless with smaller systems wins.
+Reproduce via \texttt{python src/run\_pg19\_suite.py --k\_ratio \{0.5,0.8\} --num\_samples 20}; results in \texttt{results/results\_pg19\_suite\_r\{050,080\}.json}.
+
+\begin{thebibliography}{99}
+\small
+
+\bibitem{biderman2023pythia}
+S.~Biderman, H.~Schoelkopf, Q.~Anthony, H.~Bradley, K.~O'Brien, E.~Hallahan, M.~A.~Khan, S.~Purohit, U.~S.~S.~Prashanth, E.~Raff, A.~Skowron, L.~Sutawika, and O.~van der Wal.
+\newblock Pythia: A suite for analyzing large language models across training and scaling.
+\newblock In \textit{Proceedings of the 40th International Conference on Machine Learning (ICML)}, pages 2397--2430, 2023.
+
+\bibitem{xiao2024streamingllm}
+G.~Xiao, Y.~Tian, B.~Chen, S.~Han, and M.~Lewis.
+\newblock Efficient streaming language models with attention sinks.
+\newblock In \textit{Proceedings of the 12th International Conference on Learning Representations (ICLR)}, 2024.
+
+\bibitem{li2024snapkv}
+Y.~Li, Y.~Huang, B.~Yang, B.~Venkitesh, A.~Locatelli, H.~Ye, T.~Cai, P.~Lewis, and D.~Chen.
+\newblock SnapKV: LLM knows what you are looking for before generation.
+\newblock In \textit{Advances in Neural Information Processing Systems (NeurIPS)}, volume~37, 2024.
+
+\bibitem{he2025treekv}
+Z.~He, J.~Yuan, H.~Bai, J.~Leng, and B.~Jiang.
+\newblock TreeKV: Smooth key-value cache compression with tree structures.
+\newblock In \textit{Proceedings of the 34th International Joint Conference on Artificial Intelligence (IJCAI)}, pages 8086--8094, 2025.
+
+\bibitem{sun2024yoco}
+Y.~Sun, L.~Dong, Y.~Zhu, S.~Huang, W.~Wang, S.~Ma, Q.~Zhang, J.~Wang, and F.~Wei.
+\newblock You only cache once: Decoder-decoder architectures for language models.
+\newblock In \textit{Advances in Neural Information Processing Systems (NeurIPS)}, volume~37, 2024.
+
+\end{thebibliography}
+
+\end{document}

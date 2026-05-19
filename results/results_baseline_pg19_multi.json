@@ -1,0 +1,37 @@
+{
+  "pg19_ppl_avg": 16.6709,
+  "pg19_per_sample": [
+    {
+      "sample_idx": 0,
+      "title": "Reminiscences of Pioneer Days in St. Paul by Frank Moore",
+      "ppl": 13.7545,
+      "tokens": 8191
+    },
+    {
+      "sample_idx": 1,
+      "title": "Dragon's blood by Henry Milner Rideout",
+      "ppl": 20.422,
+      "tokens": 8191
+    },
+    {
+      "sample_idx": 2,
+      "title": "Travels in Morocco Volume 2 by James Richardson",
+      "ppl": 17.2432,
+      "tokens": 8191
+    },
+    {
+      "sample_idx": 3,
+      "title": "Impressions of Theophrastus Such by George Eliot",
+      "ppl": 22.2993,
+      "tokens": 8191
+    },
+    {
+      "sample_idx": 4,
+      "title": "Odd Craft Part 4: Bill's Lapse by W.W. Jacobs",
+      "ppl": 11.3477,
+      "tokens": 7140
+    }
+  ],
+  "max_length": 2048,
+  "num_samples": 5
+}
