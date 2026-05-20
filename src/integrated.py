@@ -285,6 +285,9 @@ def run_mode(
         obs_window=args.obs_window,
         local_window=args.local_window,
         n_levels=args.n_levels,
+        query_pool=args.query_pool,
+        exp_lambda=args.exp_lambda,
+        topk_q=args.topk_q,
         use_sink=config.use_sink,
         use_layer_adaptive=config.use_layer_adaptive,
         use_cross_layer_fusion=config.use_cross_layer_fusion,
@@ -378,6 +381,10 @@ def main():
     parser.add_argument("--obs_window",   type=int,   default=32)
     parser.add_argument("--local_window", type=int,   default=32)
     parser.add_argument("--n_levels",     type=int,   default=4)
+    parser.add_argument("--query_pool", type=str, default="mean",
+                        choices=["mean", "exp", "max", "topk_mean"])
+    parser.add_argument("--exp_lambda", type=float, default=0.9)
+    parser.add_argument("--topk_q", type=int, default=8)
     parser.add_argument("--pg19_tokens",  type=int,   default=8192)
     parser.add_argument("--pg19_max_length", type=int, default=4096,
                         help="pg-19 滑动窗口大小（更长以体现 KV 压缩）")

@@ -31,6 +31,9 @@ class TieredKVConfig:
     obs_window: int = 32
     local_window: int = 32
     n_levels: int = 4
+    query_pool: str = "mean"
+    exp_lambda: float = 0.9
+    topk_q: int = 8
 
     use_sink: bool = True
     use_layer_adaptive: bool = True
@@ -75,10 +78,48 @@ def _default_ratios_for_layers(n_layers: int) -> list[float]:
     return [lo + (hi - lo) * i / (n_layers - 1) for i in range(n_layers)]
 
 
-def _importance_from_attention(attn_w: torch.Tensor, obs_window: int) -> torch.Tensor:
+def _pool_query_attention(
+    obs_attn: torch.Tensor,
+    query_pool: str = "mean",
+    exp_lambda: float = 0.9,
+    topk_q: int = 8,
+) -> torch.Tensor:
+    """
+    obs_attn: [B, H, obs, S_k] -> importance [S_k]
+    """
+    query_key = obs_attn.mean(dim=1)[0]  # [obs, S_k]
+    obs_len = query_key.size(0)
+    if query_pool == "mean":
+        return query_key.mean(dim=0)
+    if query_pool == "exp":
+        lam = min(max(exp_lambda, 1e-4), 0.9999)
+        exps = torch.arange(obs_len - 1, -1, -1, device=query_key.device)
+        weights = lam ** exps
+        weights = weights / (weights.sum() + 1e-9)
+        return (query_key * weights.unsqueeze(-1)).sum(dim=0)
+    if query_pool == "max":
+        return query_key.max(dim=0).values
+    if query_pool == "topk_mean":
+        k = max(1, min(int(topk_q), obs_len))
+        return query_key.topk(k, dim=0).values.mean(dim=0)
+    raise ValueError(f"Unsupported query_pool: {query_pool}")
+
+
+def _importance_from_attention(
+    attn_w: torch.Tensor,
+    obs_window: int,
+    query_pool: str = "mean",
+    exp_lambda: float = 0.9,
+    topk_q: int = 8,
+) -> torch.Tensor:
     obs_start = max(0, attn_w.size(2) - obs_window)
     obs_attn = attn_w[:, :, obs_start:, :]
-    return obs_attn.mean(dim=1).mean(dim=1)[0]
+    return _pool_query_attention(
+        obs_attn,
+        query_pool=query_pool,
+        exp_lambda=exp_lambda,
+        topk_q=topk_q,
+    )
 
 
 def _block_budgets(n_levels: int, total_budget: int, geometry_skew: float) -> list[int]:
@@ -195,10 +236,16 @@ def _compress_layer_treekv(
     layer.values = layer.values[:, :, all_idx, :]
 
 
-def _fused_importance(attentions, obs_window: int, n_layers: int) -> torch.Tensor:
+def _fused_importance(attentions, config: TieredKVConfig, n_layers: int) -> torch.Tensor:
     """跨层聚合 attention importance（Tier 2：层间信号融合）。"""
     per_layer = [
-        _importance_from_attention(attentions[i], obs_window)
+        _importance_from_attention(
+            attentions[i],
+            config.obs_window,
+            query_pool=config.query_pool,
+            exp_lambda=config.exp_lambda,
+            topk_q=config.topk_q,
+        )
         for i in range(n_layers)
     ]
     stacked = torch.stack(per_layer, dim=0)          # [L, S]
@@ -217,7 +264,7 @@ def compress_kv_tiered(past_kv, attentions, config: TieredKVConfig):
     k_sink = config.effective_k_sink()
 
     if config.use_cross_layer_fusion:
-        importance = _fused_importance(attentions, config.obs_window, n_layers)
+        importance = _fused_importance(attentions, config, n_layers)
         for layer in past_kv.layers:
             _compress_layer_treekv(
                 layer,
@@ -232,7 +279,11 @@ def compress_kv_tiered(past_kv, attentions, config: TieredKVConfig):
 
     for layer_idx, layer in enumerate(past_kv.layers):
         importance = _importance_from_attention(
-            attentions[layer_idx], config.obs_window,
+            attentions[layer_idx],
+            config.obs_window,
+            query_pool=config.query_pool,
+            exp_lambda=config.exp_lambda,
+            topk_q=config.topk_q,
         )
         _compress_layer_treekv(
             layer,

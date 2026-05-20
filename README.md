@@ -8,8 +8,6 @@ Training-free hierarchical KV cache compression for **Pythia-70M**, combining:
 | T2 | Cross-layer importance fusion (optional) | `tiered_kv.py` |
 | T3 | TreeKV intra-layer block eviction | `tiered_kv.py` |
 
-Individual baseline implementations (StreamingLLM, SnapKV, TreeKV, SnapKV improvements) live in the **personal repo**: [KV_Cache_Compression](https://github.com/6chHenry/KV_Cache_Compression).
-
 ---
 
 ## Setup
